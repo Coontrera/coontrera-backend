@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Coontrera.Api/Coontrera.Api.csproj" />
+  <Project Path="Coontrera.Application/Coontrera.Application.csproj" />
+  <Project Path="Coontrera.Domain/Coontrera.Domain.csproj" />
+  <Project Path="Coontrera.Infrastructure/Coontrera.Infrastructure.csproj" />
+</Solution>
