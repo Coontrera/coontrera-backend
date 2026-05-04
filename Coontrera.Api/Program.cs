@@ -3,6 +3,8 @@ using Microsoft.IdentityModel.Tokens;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.OpenApi.Models;
+using Coontrera.Domain.Interfaces;
+using Coontrera.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +71,8 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
+builder.Services.AddScoped<IPasswordHasher, ByCryptPasswordHasher>();
 
 var app = builder.Build();
 
