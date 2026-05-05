@@ -8,6 +8,6 @@ namespace Coontrera.Domain.Interfaces
         Task<User?> GetUserByIdAsync(string id); 
         Task<User?> GetUserByEmailAsync(string email); 
         Task UpdateUserAsync(User user);
-        Task DeleteUserAsync(string id, string currentUserId);
+        Task DeleteUserAsync(string id);
     }
 }
