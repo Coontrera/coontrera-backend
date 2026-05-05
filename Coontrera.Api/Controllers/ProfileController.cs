@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Google.Cloud.Firestore;
+using Coontrera.Application.Interfaces;
 
 namespace Coontrera.Api.Controllers;
 
@@ -10,11 +10,11 @@ namespace Coontrera.Api.Controllers;
 [Authorize]
 public class ProfileController : ControllerBase
 {
-    private readonly FirestoreDb _db;
+    private readonly IUserService _userService;
 
-    public ProfileController(IConfiguration config)
+    public ProfileController(IUserService userService)
     {
-        _db = FirestoreDb.Create(config["Firebase:ProjectId"]);
+        _userService = userService;
     }
 
     [HttpGet("me")]
@@ -26,23 +26,9 @@ public class ProfileController : ControllerBase
         if (string.IsNullOrEmpty(firebaseUid))
             return Unauthorized();
 
-        DocumentReference userDoc = _db.Collection("Users").Document(firebaseUid);
-        DocumentSnapshot snapshot = await userDoc.GetSnapshotAsync();
+        var profile = await _userService.GetOrCreateProfileAsync(firebaseUid, email);
 
-        if (snapshot.Exists)
-        {
-            return Ok(snapshot.ToDictionary());
-        }
-
-        var newUser = new
-        {
-            Email = email,
-            CreatedAt = Timestamp.GetCurrentTimestamp(),
-            RoleLevel = 1
-        };
-
-        await userDoc.SetAsync(newUser);
-        return Ok(newUser);
+        return Ok(profile);
     }
 
     [HttpGet("admin-data")]
@@ -53,20 +39,15 @@ public class ProfileController : ControllerBase
         if (string.IsNullOrEmpty(firebaseUid))
             return Unauthorized();
 
-        DocumentSnapshot snapshot = await _db.Collection("Users").Document(firebaseUid).GetSnapshotAsync();
-
-        if (!snapshot.Exists || !snapshot.TryGetValue("RoleLevel", out int roleLevel) || roleLevel < 3)
+        try
+        {
+            var adminData = await _userService.GetAdminDataAsync(firebaseUid);
+            return Ok(adminData);
+        }
+        catch (UnauthorizedAccessException)
         {
             return Forbid();
         }
-
-        var adminData = new
-        {
-            Message = "Acesso autorizado. Bem-vindo ao painel de administração.",
-            SystemStatus = "Online",
-            Role = roleLevel
-        };
-
-        return Ok(adminData);
+        
     }
 }

@@ -2,9 +2,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Firestore;
 using Microsoft.OpenApi.Models;
 using Coontrera.Domain.Interfaces;
 using Coontrera.Infrastructure.Security;
+using Coontrera.Infrastructure.Repositories;
+using Coontrera.Application.Interfaces;
+using Coontrera.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +76,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSingleton(FirestoreDb.Create(firebaseProjectId));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher, ByCryptPasswordHasher>();
 
 var app = builder.Build();

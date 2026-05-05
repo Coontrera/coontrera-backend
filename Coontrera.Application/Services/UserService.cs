@@ -89,5 +89,49 @@ namespace Coontrera.Application.Services
 
             await _userRepository.DeleteUserAsync(userId);
         }
+
+        public async Task<UserResponseDTO> GetOrCreateProfileAsync(string firebaseUid, string? email)
+        {
+            var user = await _userRepository.GetUserByIdAsync(firebaseUid);
+            if (user == null)
+            {
+                user = new User(
+                    name: "New User",
+                    email: email?? "",
+                    password:"",
+                    phone: "",
+                    role: UserRole.User
+                );
+
+                await _userRepository.AddUserAsync(user);
+            }
+
+            return new UserResponseDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            };
+            
+        }
+    
+        public async Task<AdminDashboardDto> GetAdminDataAsync(string firebaseUid)
+        {
+            var user = await _userRepository.GetUserByIdAsync(firebaseUid);
+            if (user == null)
+                throw new KeyNotFoundException("User not found.");
+
+            if (user.Role != UserRole.Admin)
+                throw new UnauthorizedAccessException("Access denied. Admins only.");
+
+            var adminData = new AdminDashboardDto
+            {
+                Message = "Acesso autorizado, bem-vindo ao painel de administração!",
+                SystemStatus = "Online",
+                Role = (int)user.Role
+            };
+
+            return adminData;
+        }
     }
 }

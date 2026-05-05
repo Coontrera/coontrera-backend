@@ -73,5 +73,10 @@ namespace Coontrera.Domain.Models
                 throw new ArgumentException("Password cannot be empty.", nameof(newPassword));
             Password = newPassword;
         }
+    
+        public void SetId(Guid id)
+        {
+            Id = id;
+        }
     }
 }
