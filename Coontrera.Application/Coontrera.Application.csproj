@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Coontrera.Domain\Coontrera.Domain.csproj" />
+    <PackageReference Include="FirebaseAdmin" Version="3.5.0" />
   </ItemGroup>
 
   <PropertyGroup>
