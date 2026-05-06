@@ -12,7 +12,6 @@ namespace Coontrera.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
 
-
         public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
@@ -105,6 +104,7 @@ namespace Coontrera.Application.Services
                     phone:"0000000000",
                     role: UserRole.User
                 );
+                user.SetId(firebaseUid);
 
                 await _userRepository.AddUserAsync(user);
             }
@@ -164,6 +164,8 @@ namespace Coontrera.Application.Services
                 phone: request.Phone,
                 role: UserRole.User
             );
+
+            newUser.SetId(userRecord.Uid);
 
             await _userRepository.AddUserAsync(newUser);
 

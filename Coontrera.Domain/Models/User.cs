@@ -4,7 +4,7 @@ namespace Coontrera.Domain.Models
 {
     public class User
     {
-        public Guid Id { get; private set; }
+        public string Id { get; private set; } = string.Empty;
         public string Name { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
         public string Password { get; private set; } = string.Empty;
@@ -24,7 +24,7 @@ namespace Coontrera.Domain.Models
             if(string.IsNullOrWhiteSpace(phone))
                 throw new ArgumentException("Phone cannot be empty.", nameof(phone));
 
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid().ToString();
             Name = name;
             Email = email;
             Password = password;
@@ -72,7 +72,7 @@ namespace Coontrera.Domain.Models
             Password = newPassword;
         }
     
-        public void SetId(Guid id)
+        public void SetId(string id)
         {
             Id = id;
         }

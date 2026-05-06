@@ -3,8 +3,6 @@ using Coontrera.Domain.Models;
 using Coontrera.Domain.Models.Enum;
 using Google.Cloud.Firestore;
 
-
-
 namespace Coontrera.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
@@ -19,9 +17,9 @@ namespace Coontrera.Infrastructure.Repositories
 
         public async Task<User> AddUserAsync(User user)
         {     
-            DocumentReference docRef = _db.Collection(CollectionName).Document(user.Id.ToString());
+            DocumentReference docRef = _db.Collection(CollectionName).Document(user.Id);
                    
-           var userData = new Dictionary<string, object>
+            var userData = new Dictionary<string, object>
             {
                 { "Name", user.Name },
                 { "Email", user.Email },
@@ -31,7 +29,6 @@ namespace Coontrera.Infrastructure.Repositories
                 {"IsActive", user.IsActive },
                 { "Role", (int)user.Role }
             };
-
             
             await docRef.SetAsync(userData);
 
@@ -40,7 +37,7 @@ namespace Coontrera.Infrastructure.Repositories
 
         public async Task DeleteUserAsync(string userId)
         {
-           DocumentReference docRef = _db.Collection(CollectionName).Document(userId);
+            DocumentReference docRef = _db.Collection(CollectionName).Document(userId);
             await docRef.DeleteAsync();
         }
 
@@ -52,8 +49,8 @@ namespace Coontrera.Infrastructure.Repositories
             if (!snapshot.Exists) return null;
 
             return MapSnapshotToUser(snapshot);
-
         }
+
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             Query query = _db.Collection(CollectionName).WhereEqualTo("Email", email);
@@ -66,7 +63,7 @@ namespace Coontrera.Infrastructure.Repositories
 
         public async Task UpdateUserAsync(User user)
         {
-            DocumentReference docRef = _db.Collection(CollectionName).Document(user.Id.ToString());
+            DocumentReference docRef = _db.Collection(CollectionName).Document(user.Id);
             var updates = new Dictionary<string, object>
             {
                 {"Name", user.Name },
@@ -90,10 +87,9 @@ namespace Coontrera.Infrastructure.Repositories
                 dict.ContainsKey("Role") ? (UserRole)Convert.ToInt32(dict["Role"]) : UserRole.User
             );
 
-            user.SetId(Guid.Parse(snapshot.Id));
+            user.SetId(snapshot.Id);
 
             return user;
-            
         }
     }   
 }
