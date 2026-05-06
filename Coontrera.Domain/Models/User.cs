@@ -21,8 +21,6 @@ namespace Coontrera.Domain.Models
                 throw new ArgumentException("Name cannot be empty.", nameof(name));
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException("Email cannot be empty.", nameof(email));
-            if (string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("Password cannot be empty.", nameof(password));
             if(string.IsNullOrWhiteSpace(phone))
                 throw new ArgumentException("Phone cannot be empty.", nameof(phone));
 

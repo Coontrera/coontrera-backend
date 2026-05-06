@@ -18,19 +18,21 @@ namespace Coontrera.Infrastructure.Repositories
         }
 
         public async Task<User> AddUserAsync(User user)
-        {            
+        {     
+            DocumentReference docRef = _db.Collection(CollectionName).Document(user.Id.ToString());
+                   
            var userData = new Dictionary<string, object>
             {
                 { "Name", user.Name },
                 { "Email", user.Email },
                 { "Password", user.Password },
                 { "Phone", user.Phone },
-                {"DateRegistered", user.DateRegistered },
+                {"DateRegistered", user.DateRegistered.ToUniversalTime() },
                 {"IsActive", user.IsActive },
                 { "Role", (int)user.Role }
             };
 
-            DocumentReference docRef = _db.Collection(CollectionName).Document(user.Id.ToString());
+            
             await docRef.SetAsync(userData);
 
             return user;

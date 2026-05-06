@@ -3,6 +3,7 @@ using Coontrera.Application.Interfaces;
 using Coontrera.Domain.Interfaces;
 using Coontrera.Domain.Models;
 using Coontrera.Domain.Models.Enum;
+using FirebaseAdmin.Auth;
 
 namespace Coontrera.Application.Services
 {
@@ -10,6 +11,7 @@ namespace Coontrera.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+
 
         public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
@@ -39,6 +41,7 @@ namespace Coontrera.Application.Services
                 Id = newUser.Id,
                 Name = newUser.Name,
                 Email = newUser.Email,
+                Phone = newUser.Phone
             };
             
             return response;
@@ -99,7 +102,7 @@ namespace Coontrera.Application.Services
                     name: "New User",
                     email: email?? "",
                     password:"",
-                    phone: "",
+                    phone:"0000000000",
                     role: UserRole.User
                 );
 
@@ -110,7 +113,8 @@ namespace Coontrera.Application.Services
             {
                 Id = user.Id,
                 Name = user.Name,
-                Email = user.Email
+                Email = user.Email,
+                Phone = user.Phone
             };
             
         }
@@ -132,6 +136,44 @@ namespace Coontrera.Application.Services
             };
 
             return adminData;
+        }
+    
+        public async Task<UserResponseDTO> RegisterNewUserAsync(UserRegisterDto request)
+        {
+            var userArgs = new UserRecordArgs
+            {
+                Email = request.Email,
+                Password = request.Password,
+                DisplayName = request.Name
+            };
+
+            UserRecord userRecord;
+            try
+            {
+                userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(userArgs);
+            }
+            catch (FirebaseAuthException ex)
+            {
+                throw new Exception($"Firebase error: {ex.Message}");
+            }
+
+            var newUser = new User(
+                name: request.Name,
+                email: request.Email,
+                password: "", 
+                phone: request.Phone,
+                role: UserRole.User
+            );
+
+            await _userRepository.AddUserAsync(newUser);
+
+            return new UserResponseDTO
+            {
+                Id = newUser.Id,
+                Name = newUser.Name,
+                Email = newUser.Email,
+                Phone = newUser.Phone
+            };
         }
     }
 }

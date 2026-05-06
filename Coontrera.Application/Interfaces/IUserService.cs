@@ -10,5 +10,6 @@ namespace Coontrera.Application.Interfaces
         Task DeleteUserAsync(string userId);
         Task<UserResponseDTO> GetOrCreateProfileAsync(string firebaseUid, string? email);
         Task<AdminDashboardDto> GetAdminDataAsync(string firebaseUid);
+        Task<UserResponseDTO> RegisterNewUserAsync(UserRegisterDto request);
     }
 }

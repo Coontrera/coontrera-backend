@@ -23,6 +23,7 @@ public class ProfileController : ControllerBase
         var firebaseUid = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
+
         if (string.IsNullOrEmpty(firebaseUid))
             return Unauthorized();
 
