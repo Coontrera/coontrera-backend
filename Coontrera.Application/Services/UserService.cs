@@ -1,21 +1,38 @@
+// Application
 using Coontrera.Application.DTOs;
 using Coontrera.Application.Interfaces;
+
+//Domain
 using Coontrera.Domain.Interfaces;
 using Coontrera.Domain.Models;
 using Coontrera.Domain.Models.Enum;
+
+//Others
 using FirebaseAdmin.Auth;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+
 
 namespace Coontrera.Application.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly HttpClient _httpClient;
+        private readonly string _firebaseApiKey;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly ITokenService _tokenService;
 
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
+        public UserService(IUserRepository userRepository, HttpClient httpClient, IPasswordHasher passwordHasher, IConfiguration configuration, ITokenService tokenService)
         {
             _userRepository = userRepository;
+            _firebaseApiKey = configuration["Firebase:ApiKey"];
+            _httpClient = httpClient;
             _passwordHasher = passwordHasher;
+            _tokenService = tokenService;
         }
 
         public async Task<UserResponseDTO> CreateUserAsync(UserCreateDTO request)
@@ -176,6 +193,38 @@ namespace Coontrera.Application.Services
                 Email = newUser.Email,
                 Phone = newUser.Phone
             };
+        }
+
+        public async Task<string> LoginUserAsync(string email, string password)
+        {
+            var authUrl = $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={_firebaseApiKey}";
+            
+            var requestBody = new
+            {
+                email = email,
+                password = password,
+                returnSecureToken = true
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(authUrl, content);
+
+            if (!response.IsSuccessStatusCode)
+                throw new UnauthorizedAccessException("E-mail ou senha inválidos.");
+
+            // Lemos a resposta do Firebase que contém o Token
+            var responseData = await response.Content.ReadAsStringAsync();
+            using var jsonDocument = JsonDocument.Parse(responseData);
+            
+            // Extrai o Token oficial do Firebase
+            string firebaseToken = jsonDocument.RootElement.GetProperty("localId").GetString();
+
+            // Opcional: Validar se o usuário existe no seu Firestore antes de retornar o token
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+                throw new KeyNotFoundException("Usuário não cadastrado.");
+
+            return _tokenService.GenerateToken(email, firebaseToken);
         }
     }
 }

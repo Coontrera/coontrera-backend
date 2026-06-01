@@ -4,12 +4,21 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 using Microsoft.OpenApi.Models;
+using System.Text;
+
+//Domain
 using Coontrera.Domain.Interfaces;
+
+//Infrastructure
 using Coontrera.Infrastructure.Security;
 using Coontrera.Infrastructure.Repositories;
+using Coontrera.Infrastructure.Services;
+
+//Application
 using Coontrera.Application.Interfaces;
 using Coontrera.Application.Services;
 
+//Favor manter os comentários das pastas.
 var builder = WebApplication.CreateBuilder(args);
 
 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "firebase-key.json");
@@ -52,20 +61,27 @@ builder.Services.AddSwaggerGen(c =>
 
 var firebaseProjectId = builder.Configuration["Firebase:ProjectId"];
 
+
+var jwtSecret = builder.Configuration["Jwt:SecretKey"]
+     ?? throw new InvalidOperationException("A chave secreta para JWT não foi configurada.");
+var key = Encoding.ASCII.GetBytes(jwtSecret);
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = $"https://securetoken.google.com/{firebaseProjectId}";
+        options.RequireHttpsMetadata = false; // Em produção, mude para true
+        options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidIssuer = $"https://securetoken.google.com/{firebaseProjectId}",
-            ValidateAudience = true,
-            ValidAudience = firebaseProjectId,
-            ValidateLifetime = true
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false, // Como somos nós mesmos gerando, podemos deixar false
+            ValidateAudience = false,
+            ValidateLifetime = true, // Verifica se já passou das 24 horas
+            ClockSkew = TimeSpan.Zero // Evita que o C# dê 5 minutos de "lambuja" no vencimento
         };
     });
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -77,10 +93,12 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton(FirestoreDb.Create(firebaseProjectId));
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher, ByCryptPasswordHasher>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 
