@@ -1,0 +1,41 @@
+version: '3.8'
+
+networks:
+  coontrera-network:
+    driver: bridge
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5149" 
+    networks:
+      - coontrera-network
+    restart: always
+
+  
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus_coontrera
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090" 
+    networks:
+      - coontrera-network
+    depends_on:
+      - backend
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_coontrera
+    ports:
+      - "3000:3000" 
+    networks:
+      - coontrera-network
+    depends_on:
+      - prometheus
+    restart: always
