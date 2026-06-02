@@ -33,7 +33,12 @@ services:
     image: grafana/grafana:latest
     container_name: grafana_coontrera
     ports:
-      - "3000:3000" 
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     networks:
       - coontrera-network
     depends_on:
