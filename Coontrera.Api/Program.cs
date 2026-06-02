@@ -5,6 +5,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Prometheus;
 
 //Domain
 using Coontrera.Domain.Interfaces;
@@ -20,6 +21,9 @@ using Coontrera.Application.Services;
 
 //Favor manter os comentários das pastas.
 var builder = WebApplication.CreateBuilder(args);
+
+//Exclui as métricas padrão(desnecessárias)
+Metrics.SuppressDefaultMetrics();
 
 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "firebase-key.json");
 FirebaseApp.Create(new AppOptions()
@@ -110,6 +114,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+
+app.UseHttpMetrics(); 
+app.MapMetrics();
 
 app.UseAuthentication();
 app.UseAuthorization();
