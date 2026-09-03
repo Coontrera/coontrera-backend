@@ -26,7 +26,9 @@ namespace Coontrera.Application.Services
                 request.Description,
                 request.ImageUrl,
                 request.ImageAlt,
-                request.Benefits
+                request.Benefits,
+                request.CtaText,
+                request.IconAsset
             );
 
             await _clinicServiceRepository.AddClinicServiceAsync(service);
@@ -81,7 +83,9 @@ namespace Coontrera.Application.Services
                 request.Description,
                 request.ImageUrl,
                 request.ImageAlt,
-                request.Benefits
+                request.Benefits,
+                request.CtaText,
+                request.IconAsset
             );
 
             await _clinicServiceRepository.UpdateClinicServiceAsync(service);
@@ -154,6 +158,8 @@ namespace Coontrera.Application.Services
                 Benefits = service.Benefits,
                 ImageUrl = service.ImageUrl,
                 ImageAlt = service.ImageAlt,
+                CtaText = service.CtaText,
+                IconAsset = service.IconAsset,
                 IsActive = service.IsActive,
                 DateRegistered = service.DateRegistered
             };

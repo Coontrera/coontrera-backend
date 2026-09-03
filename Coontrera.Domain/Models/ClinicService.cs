@@ -8,12 +8,21 @@ public class ClinicService
     public List<string> Benefits { get; private set; } = new();
     public string ImageUrl { get; private set; } = string.Empty;
     public string ImageAlt { get; private set; } = string.Empty;
+    public string CtaText { get; private set; } = string.Empty;
+    public string IconAsset { get; private set; } = string.Empty;
     public bool IsActive { get; private set; } = true;
-    public DateTime DateRegistered {get; private set;} = DateTime.UtcNow;
+    public DateTime DateRegistered { get; private set; } = DateTime.UtcNow;
 
     protected ClinicService() { }
 
-    public ClinicService(string title, string description, string imageUrl, string imageAlt = "", List<string>? benefits = null)
+    public ClinicService(
+        string title,
+        string description,
+        string imageUrl,
+        string imageAlt = "",
+        List<string>? benefits = null,
+        string ctaText = "",
+        string iconAsset = "")
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title cannot be empty.", nameof(title));
@@ -28,11 +37,20 @@ public class ClinicService
         ImageUrl = imageUrl;
         ImageAlt = imageAlt ?? string.Empty;
         Benefits = benefits ?? new List<string>();
+        CtaText = ctaText ?? string.Empty;
+        IconAsset = iconAsset ?? string.Empty;
         IsActive = true;
         DateRegistered = DateTime.UtcNow;
     }
 
-    public void Update(string title, string description, string imageUrl, string imageAlt, List<string>? benefits)
+    public void Update(
+        string title,
+        string description,
+        string imageUrl,
+        string imageAlt,
+        List<string>? benefits,
+        string? ctaText = null,
+        string? iconAsset = null)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title cannot be empty.", nameof(title));
@@ -46,11 +64,23 @@ public class ClinicService
         ImageUrl = imageUrl;
         ImageAlt = imageAlt ?? string.Empty;
         Benefits = benefits ?? new List<string>();
+        if (ctaText != null) CtaText = ctaText;
+        if (iconAsset != null) IconAsset = iconAsset;
     }
 
     public void SetId(string id)
     {
         Id = id;
+    }
+
+    public void SetCtaText(string ctaText)
+    {
+        CtaText = ctaText ?? string.Empty;
+    }
+
+    public void SetIconAsset(string iconAsset)
+    {
+        IconAsset = iconAsset ?? string.Empty;
     }
 
     public void SetDateRegistered(DateTime dateRegistered)

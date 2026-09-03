@@ -25,6 +25,8 @@ namespace Coontrera.Infrastructure.Repositories
                 { "Benefits", service.Benefits },
                 { "ImageUrl", service.ImageUrl },
                 { "ImageAlt", service.ImageAlt },
+                { "CtaText", service.CtaText },
+                { "IconAsset", service.IconAsset },
                 { "IsActive", service.IsActive },
                 { "DateRegistered", service.DateRegistered.ToUniversalTime() }
             };
@@ -67,6 +69,8 @@ namespace Coontrera.Infrastructure.Repositories
                 { "Benefits", service.Benefits },
                 { "ImageUrl", service.ImageUrl },
                 { "ImageAlt", service.ImageAlt },
+                { "CtaText", service.CtaText },
+                { "IconAsset", service.IconAsset },
                 { "IsActive", service.IsActive }
             };
 
@@ -97,7 +101,9 @@ namespace Coontrera.Infrastructure.Repositories
                 dict.TryGetValue("Description", out var desc) ? desc?.ToString() ?? string.Empty : string.Empty,
                 dict.TryGetValue("ImageUrl", out var imgUrl) ? imgUrl?.ToString() ?? string.Empty : string.Empty,
                 dict.TryGetValue("ImageAlt", out var imgAlt) ? imgAlt?.ToString() ?? string.Empty : string.Empty,
-                benefits
+                benefits,
+                dict.TryGetValue("CtaText", out var cta) ? cta?.ToString() ?? string.Empty : string.Empty,
+                dict.TryGetValue("IconAsset", out var icon) ? icon?.ToString() ?? string.Empty : string.Empty
             );
 
             if (dict.TryGetValue("IsActive", out var isActiveVal) && isActiveVal is bool isActive)

@@ -61,6 +61,20 @@ namespace Coontrera.Infrastructure.Repositories
             return MapSnapshotToUser(querySnapshot.Documents[0]);
         }
 
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            Query query = _db.Collection(CollectionName);
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+
+            var users = new List<User>();
+            foreach (var document in querySnapshot.Documents)
+            {
+                users.Add(MapSnapshotToUser(document));
+            }
+
+            return users;
+        }
+
         public async Task UpdateUserAsync(User user)
         {
             DocumentReference docRef = _db.Collection(CollectionName).Document(user.Id);

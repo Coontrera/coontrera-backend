@@ -20,6 +20,10 @@ namespace Coontrera.Application.DTOs
 
         public string ImageAlt { get; set; } = string.Empty;
 
+        public string CtaText { get; set; } = string.Empty;
+
+        public string IconAsset { get; set; } = string.Empty;
+
         public List<string> Benefits { get; set; } = new();
     }
 }
