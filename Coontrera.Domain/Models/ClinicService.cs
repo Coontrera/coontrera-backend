@@ -9,6 +9,7 @@ public class ClinicService
     public string ImageUrl { get; private set; } = string.Empty;
     public string ImageAlt { get; private set; } = string.Empty;
     public bool IsActive { get; private set; } = true;
+    public DateTime DateRegistered {get; private set;} = DateTime.UtcNow;
 
     protected ClinicService() { }
 
@@ -28,6 +29,7 @@ public class ClinicService
         ImageAlt = imageAlt ?? string.Empty;
         Benefits = benefits ?? new List<string>();
         IsActive = true;
+        DateRegistered = DateTime.UtcNow;
     }
 
     public void Update(string title, string description, string imageUrl, string imageAlt, List<string>? benefits)
@@ -49,6 +51,11 @@ public class ClinicService
     public void SetId(string id)
     {
         Id = id;
+    }
+
+    public void SetDateRegistered(DateTime dateRegistered)
+    {
+        DateRegistered = dateRegistered;
     }
 
     public void Deactivate()

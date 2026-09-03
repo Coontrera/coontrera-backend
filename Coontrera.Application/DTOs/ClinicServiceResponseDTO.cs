@@ -9,5 +9,6 @@ namespace Coontrera.Application.DTOs
         public string ImageUrl { get; set; } = string.Empty;
         public string ImageAlt { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public DateTime DateRegistered { get; set; }
     }
 }

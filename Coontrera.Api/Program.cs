@@ -80,10 +80,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false, // Como somos nós mesmos gerando, podemos deixar false
+            ValidateIssuer = false, 
             ValidateAudience = false,
-            ValidateLifetime = true, // Verifica se já passou das 24 horas
-            ClockSkew = TimeSpan.Zero // Evita que o C# dê 5 minutos de "lambuja" no vencimento
+            ValidateLifetime = true, 
+            ClockSkew = TimeSpan.Zero 
         };
     });
 builder.Services.AddCors(options =>

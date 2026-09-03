@@ -25,7 +25,8 @@ namespace Coontrera.Infrastructure.Repositories
                 { "Benefits", service.Benefits },
                 { "ImageUrl", service.ImageUrl },
                 { "ImageAlt", service.ImageAlt },
-                { "IsActive", service.IsActive }
+                { "IsActive", service.IsActive },
+                { "DateRegistered", service.DateRegistered.ToUniversalTime() }
             };
 
             await docRef.SetAsync(serviceData);
@@ -104,6 +105,22 @@ namespace Coontrera.Infrastructure.Repositories
                 if (!isActive)
                 {
                     service.Deactivate();
+                }
+            }
+
+            if (dict.TryGetValue("DateRegistered", out var dateVal))
+            {
+                if (dateVal is Timestamp ts)
+                {
+                    service.SetDateRegistered(ts.ToDateTime());
+                }
+                else if (dateVal is DateTime dt)
+                {
+                    service.SetDateRegistered(dt);
+                }
+                else if (dateVal is string dateStr && DateTime.TryParse(dateStr, out var parsedDate))
+                {
+                    service.SetDateRegistered(parsedDate);
                 }
             }
 

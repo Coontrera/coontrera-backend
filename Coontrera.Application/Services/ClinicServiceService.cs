@@ -154,7 +154,8 @@ namespace Coontrera.Application.Services
                 Benefits = service.Benefits,
                 ImageUrl = service.ImageUrl,
                 ImageAlt = service.ImageAlt,
-                IsActive = service.IsActive
+                IsActive = service.IsActive,
+                DateRegistered = service.DateRegistered
             };
         }
     }
